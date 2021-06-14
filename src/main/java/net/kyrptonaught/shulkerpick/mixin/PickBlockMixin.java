@@ -20,7 +20,7 @@ public class PickBlockMixin {
 
     @Redirect(method = "doItemPick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerInventory;getSlotWithStack(Lnet/minecraft/item/ItemStack;)I"))
     public int pickFromShulker(PlayerInventory playerInventory, ItemStack stack) {
-        if (player.abilities.creativeMode) return 0;
+        if (player.getAbilities().creativeMode) return 0;
         int slot = playerInventory.getSlotWithStack(stack);
         if (slot != -1) return slot;
         if (Util.getShulkerWithStack(playerInventory, stack) > -1)

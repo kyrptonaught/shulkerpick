@@ -24,13 +24,13 @@ public class InventoryHelper {
     }
 
     public static boolean insertIntoShulker(PlayerEntity playerEntity, int fromSlot) {
-        for (int i = 0; i < getSize(playerEntity.inventory); i++) {
-            ItemStack stack = playerEntity.inventory.getStack(i);
+        for (int i = 0; i < getSize(playerEntity.getInventory()); i++) {
+            ItemStack stack = playerEntity.getInventory().getStack(i);
             if (Util.isShulkerItem(stack)) {
                 ItemStackInventory shulkerInv = ShulkerUtils.getInventoryFromShulker(stack);
-                if (ShulkerUtils.shulkerContainsAny(shulkerInv,playerEntity.inventory.getStack(fromSlot))) {
-                    ItemStack returnStack = shulkerInv.addStack(playerEntity.inventory.removeStack(fromSlot));
-                    playerEntity.inventory.setStack(fromSlot, returnStack);
+                if (ShulkerUtils.shulkerContainsAny(shulkerInv,playerEntity.getInventory().getStack(fromSlot))) {
+                    ItemStack returnStack = shulkerInv.addStack(playerEntity.getInventory().removeStack(fromSlot));
+                    playerEntity.getInventory().setStack(fromSlot, returnStack);
                     shulkerInv.onClose(playerEntity);
                     if (returnStack.isEmpty()) return true;
                 }

@@ -9,7 +9,7 @@ import net.kyrptonaught.shulkerutils.ItemStackInventory;
 import net.kyrptonaught.shulkerutils.ShulkerUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.packet.s2c.play.HeldItemChangeS2CPacket;
+import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.util.Identifier;
 
 public class PickShulkerPacket {
@@ -20,32 +20,32 @@ public class PickShulkerPacket {
         ServerPlayNetworking.registerGlobalReceiver(SHULKER_PICK_PACKET, (server, player, serverPlayNetworkHandler, packetByteBuf, packetSender) -> {
             ItemStack stack = packetByteBuf.readItemStack();
             server.execute(() -> {
-                int shulkerSlot = Util.getShulkerWithStack(player.inventory, stack);
+                int shulkerSlot = Util.getShulkerWithStack(player.getInventory(), stack);
                 if (shulkerSlot != -1) {
-                    ItemStackInventory shulkerInv = ShulkerUtils.getInventoryFromShulker(player.inventory.getStack(shulkerSlot));
+                    ItemStackInventory shulkerInv = ShulkerUtils.getInventoryFromShulker(player.getInventory().getStack(shulkerSlot));
                     int slotInShulker = Util.getSlotWithStack(shulkerInv, stack);
                     if (slotInShulker != -1) {
                         //empty hotbar slot
-                        int hotbarSlot = Util.getHotBarSlot(player.inventory, shulkerSlot);
-                        player.inventory.selectedSlot = hotbarSlot;
-                        player.networkHandler.sendPacket(new HeldItemChangeS2CPacket(player.inventory.selectedSlot));
+                        int hotbarSlot = Util.getHotBarSlot(player.getInventory(), shulkerSlot);
+                        player.getInventory().selectedSlot = hotbarSlot;
+                        player.networkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(player.getInventory().selectedSlot));
                         ItemStack stackInShulker = shulkerInv.removeStack(slotInShulker);
 
-                        if (!player.inventory.getStack(hotbarSlot).isEmpty()) {
+                        if (!player.getInventory().getStack(hotbarSlot).isEmpty()) {
                             //put hotbar slot into inv slot : attempt merge or into empty
-                            if (!player.inventory.getStack(hotbarSlot).isEmpty()) {
-                                InventoryHelper.insertStack(player.inventory, hotbarSlot, player.inventory, hotbarSlot);
+                            if (!player.getInventory().getStack(hotbarSlot).isEmpty()) {
+                                InventoryHelper.insertStack(player.getInventory(), hotbarSlot, player.getInventory(), hotbarSlot);
                             }
                             //swap places in shulker
-                            if (!player.inventory.getStack(hotbarSlot).isEmpty() && !Util.isShulkerItem(player.inventory.getStack(hotbarSlot))) {
-                                ItemStack result = ShulkerUtils.insertIntoShulker(shulkerInv, player.inventory.getStack(hotbarSlot), player);
-                                player.inventory.setStack(hotbarSlot, result);
+                            if (!player.getInventory().getStack(hotbarSlot).isEmpty() && !Util.isShulkerItem(player.getInventory().getStack(hotbarSlot))) {
+                                ItemStack result = ShulkerUtils.insertIntoShulker(shulkerInv, player.getInventory().getStack(hotbarSlot), player);
+                                player.getInventory().setStack(hotbarSlot, result);
                             }
                             //drop on ground
-                            if (!player.inventory.getStack(hotbarSlot).isEmpty())
-                                player.dropStack(player.inventory.removeStack(hotbarSlot));
+                            if (!player.getInventory().getStack(hotbarSlot).isEmpty())
+                                player.dropStack(player.getInventory().removeStack(hotbarSlot));
                         }
-                        player.inventory.setStack(hotbarSlot, stackInShulker);
+                        player.getInventory().setStack(hotbarSlot, stackInShulker);
                         shulkerInv.onClose(player);
                     }
                 }
