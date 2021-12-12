@@ -1,3 +1,3 @@
-#ShulkerPick 
+# ShulkerPick 
 
-Pick block searches inside of shulkers too
+Pick block searches inside shulkers too
